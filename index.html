@@ -53,8 +53,8 @@
     $('#selectMiner').on('change', function () {
         var minerName = $('#selectMiner').find(":selected").val()
     
-        var URL_GET = 'https://api.helium.io/v1/hotspots/'+ minerName
-        var URL_REWARDS = 'https://api.helium.io/v1/hotspots/'+ minerName +'/rewards/sum?min_time=2021-04-25&bucket=week'
+        var URL_GET = 'http://cors.io/https://api.helium.io/v1/hotspots/'+ minerName
+        var URL_REWARDS = 'http://cors.io/https://api.helium.io/v1/hotspots/'+ minerName +'/rewards/sum?min_time=2021-04-25&bucket=week'
 
         $.ajax({
             url: URL_GET, 
