@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeliumAPI</title>
+    <link href="/public/build/tailwind.css" type="text/css" rel="stylesheet" />
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;1,700&family=Quando&display=swap" rel="stylesheet"> 
+</head>
+<body class="bg-gray-200 p-10">
+
+    
+    <main class="">
+
+        <div class="grid grid-cols-2">
+            <div class="col-span-2 shadow-lg bg-white rounded-md p-5">
+                <select id="selectMiner" class="mb-10" name="" id="">
+                    <option selected disabled value="no-miner">Select Miner</option>
+                    <option value="112R5uqL1QN5tq7hJgR4kgFVb5V214u9EMLUoCc7eiiqao515z7V">Jeff Miner</option>
+                    <option value="112p1tY23LX5Jo4tmnMnhmKw2d83SLZDSKKQ4Xgjp98bMCFsynKX">Dads Miner</option>
+                </select>
+                <div class="flex justify-between item-center">
+                    <h1 class="font-bold text-lg">Miner Address</h1>
+                    <div>
+                        <span id="status" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium">
+                            
+                        </span>
+                    </div>
+                </div>
+                <p id="city"></p>
+                <p id="country"></p>
+                <div class="h-px w-full bg-gray-200 my-4"></div>
+                <div class="flex justify-between">
+                    <p>Total HNT</p>
+                    <p class="font-bold" id="hntTotal"></p>
+                </div>
+            </div>
+        </div>
+        
+        
+    </main>
+
+
+    <!-- scripts -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    
+    <script>
+
+    $('#selectMiner').on('change', function () {
+        var minerName = $('#selectMiner').find(":selected").val()
+    
+        var URL_GET = 'https://api.helium.io/v1/hotspots/'+ minerName
+        var URL_REWARDS = 'https://api.helium.io/v1/hotspots/'+ minerName +'/rewards/sum?min_time=2021-04-25&bucket=week'
+
+        $.ajax({
+            url: URL_GET, 
+            method: 'GET',
+            dataType: "json",
+            headers: {
+              "accept": "application/json",
+              "Access-Control-Allow-Origin":"*"
+            },
+            beforeSend: function() {
+
+            },
+            complete: function() {
+
+            },
+            success: function(result){
+                $('#city').html(result.data.geocode.long_city)
+                $('#country').html(result.data.geocode.long_country)
+                $('#status').html(result.data.status.online)
+
+                if (result.data.status.online === 'online') {
+                    $('#status').addClass('bg-green-100 text-green-800')
+                } else if (result.data.status.online === 'offline') {
+                    $('#status').addClass('bg-red-100 text-red-800')
+                }
+            }
+                  
+        });
+
+        $.ajax({
+            url: URL_REWARDS, 
+            method: 'GET',
+            dataType: "json",
+            headers: {
+              "accept": "application/json",
+              "Access-Control-Allow-Origin":"*"
+            },
+            beforeSend: function() {
+
+            },
+            complete: function() {
+
+            },
+            success: function(result){
+
+                let metrics = result.data;
+                let metricsKeys = Object.keys(metrics)
+                let sum = 0
+
+                metricsKeys.forEach(key => {
+                    // console.log(metrics[key].total)
+                    sum += metrics[key].total
+                    let totalHNT = Math.round(sum * 100) / 100
+                     $('#hntTotal').html(totalHNT)
+                });
+
+                
+            }
+                  
+        });
+    });
+    
+    </script>
+</body>
+</html>
